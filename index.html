@@ -3,287 +3,132 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ai</title>
+<title>AI Chat by Ethan</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
-:root {
-  --bg-dark: #0b0f2e;
-  --fg-dark: #f5f5f5;
-  --bg-light: #d9f0ff;
-  --fg-light: #0b0f2e;
-  --accent: #0b66ff;
-  --radius: 14px;
-}
-body {
-  margin:0;
-  font-family:"Poppins",sans-serif;
-  display:flex;
-  flex-direction:column;
-  height:100vh;
-  background: var(--bg-dark);
-  color: var(--fg-dark);
-  transition: background 0.5s, color 0.5s;
-}
-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 20px;
-  background:rgba(0,0,0,0.5);
-  color:#fff;
-}
-header a {
-  text-decoration:none;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  gap:5px;
-  position:relative;
-}
-header a:hover .tooltip {
-  opacity:1;
-  visibility:visible;
-}
-.tooltip {
-  position:absolute;
-  top:120%;
-  left:50%;
-  transform:translateX(-50%);
-  background:#222;
-  color:#fff;
-  padding:5px 10px;
-  border-radius:8px;
-  font-size:12px;
-  opacity:0;
-  visibility:hidden;
-  transition:0.3s;
-}
-#chat {
-  flex:1;
-  overflow-y:auto;
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  background: linear-gradient(135deg, #0b66ff, #222222);
-  background-size: 400% 400%;
-  animation: gradientAnim 15s ease infinite;
-}
-@keyframes gradientAnim {
-  0%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 50%;}
-}
-.message {
-  max-width:70%;
-  padding:10px 15px;
-  border-radius:var(--radius);
-  position:relative;
-  word-break:break-word;
-}
-.message.user {
-  align-self:flex-end;
-  background:rgba(11,102,255,0.8);
-  color:#fff;
-  border-bottom-right-radius:0;
-}
-.message.bot {
-  align-self:flex-start;
-  background:rgba(0,0,0,0.5);
-  color:#fff;
-  border-bottom-left-radius:0;
-}
-.message .meta {
-  font-size:10px;
-  color:rgba(255,255,255,0.7);
-  margin-top:2px;
-}
-.message .actions {
-  display:flex;
-  gap:5px;
-  font-size:12px;
-  margin-top:5px;
-}
-.message .actions span {
-  cursor:pointer;
-  padding:2px 4px;
-  border-radius:4px;
-  background:rgba(255,255,255,0.1);
-  transition:0.2s;
-}
-.message .actions span:hover {
-  background:rgba(255,255,255,0.3);
-}
-#inputBar {
-  display:flex;
-  padding:10px 20px;
-  gap:10px;
-  background:rgba(0,0,0,0.3);
-}
-#inputBar input {
-  flex:1;
-  padding:10px 15px;
-  border-radius:50px;
-  border:none;
-  outline:none;
-  font-size:16px;
-}
-#inputBar button {
-  padding:10px 20px;
-  border:none;
-  border-radius:50px;
-  background:var(--accent);
-  color:#fff;
-  cursor:pointer;
-}
-footer {
-  padding:10px 20px;
-  text-align:center;
-  font-size:12px;
-  color:rgba(255,255,255,0.7);
-  background:rgba(0,0,0,0.3);
-}
-#settings {
-  position:absolute;
-  top:10px;
-  right:10px;
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-#settings label {
-  font-size:12px;
-}
+:root{--bg:#0b0b1f;--fg:#fff;--accent1:#0b0b1f;--accent2:#1a1a40;}
+body{margin:0;font-family:'Poppins',sans-serif;display:flex;flex-direction:column;height:100vh;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:var(--fg);}
+header{padding:10px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.6);}
+header h1{margin:0;font-size:18px;font-weight:600;}
+#chat{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:10px;}
+.message{display:flex;flex-direction:column;padding:10px;border-radius:12px;position:relative;max-width:70%;word-wrap:break-word;white-space:pre-wrap;line-height:1.4;position:relative;}
+.message.user{align-self:flex-end;background:#4b6cf7;color:#fff;}
+.message.bot{align-self:flex-start;background:#2b2b50;color:#fff;}
+.message .content{padding-right:50px;} /* leave space for timestamp */
+.timestamp{font-size:10px;color:#aaa;position:absolute;bottom:2px;right:8px;}
+#input-area{display:flex;padding:10px;background:rgba(0,0,0,0.5);}
+#input-area input{flex:1;padding:10px;border-radius:20px;border:none;outline:none;margin-right:10px;}
+#input-area button{padding:10px 16px;border:none;border-radius:20px;background:#4b6cf7;color:#fff;cursor:pointer;}
+.settings{display:flex;gap:10px;align-items:center;margin-left:20px;}
 </style>
 </head>
 <body>
 
 <header>
-  <div>Made by Ethan</div>
-  <a href="https://github.com/ethanytangcodes/ai/" target="_blank">
-    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2 .37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.58.82-2.13-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 012 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.55.82 1.26.82 2.13 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0016 8c0-4.42-3.58-8-8-8z"/>
-    </svg>
-    <span class="tooltip">source Code</span>
-  </a>
+<h1>made by Ethan Tang <span style="font-size:12px;color:#ccc;">(Beta 🧪)</span></h1>
+<div class="settings">
+<label>theme:
+<select id="theme-select">
+<option value="dark">Dark</option>
+<option value="light">Light</option>
+</select>
+</label>
+</div>
 </header>
 
 <div id="chat"></div>
 
-<div id="inputBar">
-  <input type="text" id="userInput" placeholder="type a message..." />
-  <button id="sendBtn">send</button>
+<div id="input-area">
+<input type="text" id="user-input" placeholder="send something..." />
+<button id="send-btn">send</button>
 </div>
-
-<div id="settings">
-  <label>Theme:
-    <select id="themeSelect">
-      <option value="dark">dark</option>
-      <option value="light">light</option>
-    </select>
-  </label>
-  <label>color 1:<input type="color" id="color1" value="#0b66ff"></label>
-  <label>color 2:<input type="color" id="color2" value="#222222"></label>
-  <button id="applyGradient">apply</button>
-</div>
-
-<footer>© 2025 Ethan Tang. All rights reserved.</footer>
 
 <script>
-const chat = document.getElementById("chat");
-const userInput = document.getElementById("userInput");
-const sendBtn = document.getElementById("sendBtn");
-const themeSelect = document.getElementById("themeSelect");
-const color1Input = document.getElementById("color1");
-const color2Input = document.getElementById("color2");
-const applyGradient = document.getElementById("applyGradient");
+const chatEl=document.getElementById("chat");
+const inputEl=document.getElementById("user-input");
+const sendBtn=document.getElementById("send-btn");
+const themeSelect=document.getElementById("theme-select");
 
-// Theme switching
-themeSelect.onchange = () => {
-  if(themeSelect.value === "dark") {
-    document.body.style.background = "#0b0f2e";
-    document.body.style.color = "#f5f5f5";
-  } else {
-    document.body.style.background = "#d9f0ff";
-    document.body.style.color = "#0b0f2e";
+let username="User";
+
+function applyTheme(){
+  const theme=themeSelect.value;
+  if(theme==="dark"){
+    document.documentElement.style.setProperty("--accent1","#0b0b1f");
+    document.documentElement.style.setProperty("--accent2","#092889");
+  }else if(theme==="light"){
+    document.documentElement.style.setProperty("--accent1","#cce7ff");
+    document.documentElement.style.setProperty("--accent2","#f5fbff");
   }
-};
+}
+themeSelect.addEventListener("change",applyTheme);
+applyTheme();
 
-// Gradient applying
-applyGradient.onclick = () => {
-  const c1 = color1Input.value;
-  const c2 = color2Input.value;
-  chat.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
-  chat.style.backgroundSize = "400% 400%";
-  chat.style.animation = "gradientAnim 15s ease infinite";
-};
-
-// Helper to add messages
-function addMessage(content, sender="bot") {
-  const div = document.createElement("div");
-  div.className = "message " + sender;
-  div.innerHTML = content + `<div class="meta">${new Date().toLocaleTimeString()}</div>
-  <div class="actions">
-    <span onclick="copyMsg(this)">copy</span>
-    <span onclick="redoMsg(this)">redo</span>
-  </div>`;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
+function addMessage(msg,sender,streaming=false){
+  let div;
+  if(streaming && sender==="bot" && chatEl.lastChild?.classList.contains("bot")){
+    div=chatEl.lastChild;
+    div.querySelector(".content").innerHTML=marked.parse(msg);
+  } else{
+    div=document.createElement("div");
+    div.classList.add("message",sender);
+    div.innerHTML=`<strong>${sender==="user"?username:"AI"}:</strong> <span class="content">${marked.parse(msg)}</span>
+    <span class="timestamp">${new Date().toLocaleTimeString()}</span>`;
+    chatEl.appendChild(div);
+    chatEl.scrollTop=chatEl.scrollHeight;
+  }
 }
 
-// Copy/Redo
-function copyMsg(el){
-  const msg = el.closest(".message").childNodes[0].textContent;
-  navigator.clipboard.writeText(msg);
-  const toast = document.createElement("div");
-  toast.textContent = "Copied!";
-  toast.style.position = "fixed";
-  toast.style.bottom = "20px";
-  toast.style.right = "20px";
-  toast.style.padding = "10px 20px";
-  toast.style.background = "#0b66ff";
-  toast.style.color="#fff";
-  toast.style.borderRadius="10px";
-  document.body.appendChild(toast);
-  setTimeout(()=>toast.remove(),1500);
-}
-function redoMsg(el){
-  const msg = el.closest(".message").childNodes[0].textContent;
-  addMessage(msg,"user");
-  fetchResponse(msg);
+// Typing bubble with animated dots
+function addTypingBubble(){
+  const div=document.createElement("div");
+  div.classList.add("message","bot");
+  const contentSpan=document.createElement("span");
+  contentSpan.classList.add("content");
+  contentSpan.textContent="";  
+  const timestampSpan=document.createElement("span");
+  timestampSpan.classList.add("timestamp");
+  timestampSpan.textContent=new Date().toLocaleTimeString();
+  div.innerHTML=`<strong>AI:</strong> `;
+  div.appendChild(contentSpan);
+  div.appendChild(timestampSpan);
+  chatEl.appendChild(div);
+  chatEl.scrollTop=chatEl.scrollHeight;
+
+  let dots=0;
+  const interval=setInterval(()=>{
+    dots=(dots%5)+1;
+    contentSpan.textContent='.'.repeat(dots);
+  },400);
+
+  return {div,interval,contentSpan};
 }
 
-// Send
-sendBtn.onclick = () => {
-  const msg = userInput.value.trim();
+async function sendMessage(msg){
   if(!msg) return;
   addMessage(msg,"user");
-  userInput.value="";
-  fetchResponse(msg);
-};
-userInput.addEventListener("keydown", e=>{
-  if(e.key==="Enter") sendBtn.click();
-});
+  inputEl.value="";
 
-// Fetch from worker
-async function fetchResponse(msg){
-  const res = await fetch("https://ai.ethantytang11.workers.dev/api/chat",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({message: msg})
-  });
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
+  const typingObj=addTypingBubble();
+
+  const res=await fetch("https://ai.ethantytang11.workers.dev/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:msg})});
+  const reader=res.body.getReader();
+  const decoder=new TextDecoder();
   let botMsg="";
   while(true){
     const {done,value}=await reader.read();
     if(done) break;
-    botMsg += decoder.decode(value);
-    chat.lastChild.querySelector(".meta").textContent = new Date().toLocaleTimeString();
+    botMsg+=decoder.decode(value);
+    typingObj.contentSpan.innerHTML=marked.parse(botMsg);
   }
-  addMessage(botMsg,"bot");
+  clearInterval(typingObj.interval);
+  typingObj.contentSpan.innerHTML=marked.parse(botMsg);
 }
 
+sendBtn.addEventListener("click",()=>sendMessage(inputEl.value.trim()));
+inputEl.addEventListener("keypress",(e)=>{if(e.key==="Enter")sendBtn.click();});
 </script>
+
 </body>
 </html>
